@@ -8,7 +8,6 @@ import "./App.css";
 import PublicRoute from "./routeProtectors/PublicRoute";
 import AdminRoute from "./routeProtectors/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import OtpTest from "./pages/OtpTest";
 
 function App() {
   return (
@@ -46,7 +45,6 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path="/otp" element={<OtpTest />} />
       </Routes>
     </BrowserRouter>
   );

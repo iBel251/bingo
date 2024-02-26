@@ -8,9 +8,42 @@ import {
   CircularProgress,
   Toolbar,
   Typography,
+  Container,
 } from "@mui/material";
 import { useGameAuth } from "../context/GameContext";
 import ActiveSessionDisplay from "./components/ActiveSessionDisplay";
+
+// Custom styles
+const styles = {
+  appBar: {
+    backgroundColor: "#2E3B55", // Deep, rich blue
+    color: "#DAA520", // Golden text for a luxurious feel
+  },
+  balanceDisplay: {
+    flexGrow: 1,
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  logoutButton: {
+    color: "#1A202C", // Golden button text
+    backgroundColor: "red", // Golden border for the button
+    fontWeight: "bold",
+    "&:hover": {
+      backgroundColor: "#DAA520",
+      color: "#2E3B55", // Text color changes on hover
+    },
+  },
+  container: {
+    margin: "0px",
+    padding: "0px",
+  },
+  loadingIndicator: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+  },
+};
 
 const Main = () => {
   const { fetchBingoSessions } = useGameAuth();
@@ -23,35 +56,45 @@ const Main = () => {
   const [loadingSessions, setLoadingSessions] = useState(false);
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    const isConfirmed = window.confirm("Are you sure you want to log out?");
+    if (isConfirmed) {
+      logout();
+      navigate("/login");
+    }
   };
+
   return (
     <div>
-      <AppBar position="static">
+      <AppBar position="static" sx={styles.appBar}>
         <Toolbar>
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, cursor: "pointer" }}
+            sx={styles.balanceDisplay}
             onClick={() => navigate("/account")}
           >
             Balance: {currentUser?.balance || "0"} Birr
           </Typography>
-          <Button color="inherit" onClick={handleLogout}>
+          <Button
+            color="inherit"
+            sx={styles.logoutButton}
+            onClick={handleLogout}
+          >
             Logout
           </Button>
         </Toolbar>
       </AppBar>
       {loadingSessions ? (
-        <CircularProgress />
+        <Box sx={styles.loadingIndicator}>
+          <CircularProgress color="inherit" />
+        </Box>
       ) : (
-        <Box>
+        <Container sx={styles.container}>
           <ActiveSessionDisplay
             sessionData={activeGameSessions}
             currentUser={currentUser}
           />
-        </Box>
+        </Container>
       )}
     </div>
   );
