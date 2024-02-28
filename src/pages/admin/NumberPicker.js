@@ -10,16 +10,16 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import { useGameAuth } from "../context/GameContext";
-import useMainStore from "../store/mainStore";
+import { useGameAuth } from "../../context/GameContext";
+import useMainStore from "../../store/mainStore";
 import { useNavigate } from "react-router-dom";
 
 const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
-  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const { placeBet, fetchGameSessions } = useGameAuth();
+  const { placeBet, fetchGameSessions, placeAdminBets } = useGameAuth();
   const { updateUserBalance } = useMainStore();
   const pickedNumbers =
     session.participants?.map((participant) => participant.number) || [];
@@ -27,13 +27,6 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
   const canBet = session.betAmount <= currentUser.balance;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (pickedNumbers.includes(selectedNumber)) {
-      setErrorMessage("This number is already taken. Please choose another.");
-    } else {
-      setErrorMessage("");
-    }
-  }, [session]);
   useEffect(() => {
     if (!canBet) {
       setErrorMessage("Not enough balance");
@@ -51,38 +44,23 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
   }, [isOpen]);
 
   const onNumberSelected = (number) => {
-    if (pickedNumbers.includes(number)) {
-      setErrorMessage("This number is already taken. Please choose another.");
+    if (selectedNumbers.includes(number)) {
+      setSelectedNumbers(selectedNumbers.filter((n) => n !== number));
     } else {
-      setSelectedNumber(number);
-      setErrorMessage(""); // Clear error message when a valid number is selected
+      setSelectedNumbers([...selectedNumbers, number]);
     }
   };
 
   const handleConfirmSelection = async () => {
     setIsLoading(true);
-    if (selectedNumber !== null) {
-      const result = await placeBet(
-        userId,
-        session.id,
-        session.betAmount,
-        selectedNumber
-      );
-
-      if (result.success) {
-        fetchGameSessions();
-        updateUserBalance(currentUser.balance - session.betAmount);
-        onClose(); // Close the dialog upon successful selection
-      } else {
-        if (result.error === "Insufficient balance") {
-          setErrorMessage("Not enough balance");
-        } else {
-          setErrorMessage("Failed to place bet. Please try again.");
-        }
-      }
-      setSelectedNumber(null); // Reset selected number
-      setIsLoading(false);
+    // Adjust the logic to iterate over selectedNumbers
+    for (let number of selectedNumbers) {
+      await placeAdminBets(userId, session.id, session.betAmount, number);
     }
+    setIsLoading(false);
+    fetchGameSessions(); // Refresh session data
+    onClose(); // Close the dialog
+    setSelectedNumbers([]); // Reset selected numbers
   };
 
   const handleDiposit = () => {
@@ -144,7 +122,9 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
             ).map((number) => (
               <Grid item xs={3} key={number}>
                 <Button
-                  variant={number === selectedNumber ? "contained" : "outlined"}
+                  variant={
+                    selectedNumbers.includes(number) ? "contained" : "outlined"
+                  }
                   onClick={() => onNumberSelected(number)}
                   disabled={pickedNumbers.includes(number)}
                   sx={{
@@ -166,7 +146,7 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
           <Button
             onClick={handleConfirmSelection}
             disabled={
-              selectedNumber === null || errorMessage !== "" || isLoading
+              selectedNumbers?.length === 0 || errorMessage !== "" || isLoading
             }
             sx={{
               color: "black",

@@ -6,7 +6,7 @@ import SessionCard from "./SessionCard";
 const styles = {
   container: {
     background: "#1A202C", // A dark background for contrast
-    padding: "20px 0", // Top and bottom padding
+    padding: " 0", // Top and bottom padding
     borderRadius: "0px", // Rounded corners for the container
     margin: "0px auto", // Center the container with some margin
   },
@@ -18,12 +18,18 @@ const styles = {
 };
 
 const ActiveSessionDisplay = ({ sessionData, currentUser }) => {
+  const sortedSessions = sessionData.sort(
+    (a, b) => b.startTime.seconds - a.startTime.seconds
+  );
+
+  console.log(sortedSessions);
+
   return (
     <Container sx={styles.container}>
-      <Typography variant="h4" component="h2" sx={styles.header}>
+      {/* <Typography variant="h4" component="h2" sx={styles.header}>
         Bingo Sessions
-      </Typography>
-      {sessionData.map((session) => (
+      </Typography> */}
+      {sortedSessions.map((session) => (
         <SessionCard
           key={session.id}
           session={session}

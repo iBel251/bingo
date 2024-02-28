@@ -7,9 +7,11 @@ const useMainStore = create(
       isAuthenticated: false,
       currentUser: null,
       activeGameSessions: null,
+      completedGameSessions: null,
       setIsAuthenticated: (state) => set({ isAuthenticated: state }),
       setCurrentUser: (data) => set({ currentUser: data }),
       setActiveGameSessions: (data) => set({ activeGameSessions: data }),
+      setCompletedGameSessions: (data) => set({ completedGameSessions: data }),
       logout: () => set({ isAuthenticated: false, currentUser: null }),
       updateUserBalance: (balance) =>
         set((state) => ({

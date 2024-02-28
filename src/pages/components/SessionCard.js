@@ -12,14 +12,14 @@ const styles = {
   container: {
     border: "1px solid #2E3B55", // Dark blue for borders
     borderRadius: "0px",
-    backgroundColor: "#F3F4F6", // Light gray for background
+    backgroundColor: "#2E3B55", // Dark blue for background
     backgroundImage: `url(${diceBackground})`,
     backgroundSize: "cover", // Cover the entire area of the container
     backgroundPosition: "center",
     position: "relative",
     color: "#333",
     maxWidth: "400px",
-    margin: "10px auto",
+    margin: "0 auto 10px auto",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
   },
   secondContainer: {
@@ -114,6 +114,37 @@ const SessionCard = ({ session, currentUser }) => {
   const [isActive, setIsActive] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [userBets, setUserBets] = useState([]); // Track numbers the user has bet on
+  const [isPageVisible, setIsPageVisible] = useState(true);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsPageVisible(false);
+      } else {
+        setIsPageVisible(true);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+  useEffect(() => {
+    let interval;
+    if (isPageVisible) {
+      fetchGameSessions(); // Fetch immediately when the page becomes visible
+      interval = setInterval(fetchGameSessions, 120000); // Then set up the interval to continue fetching every 2 minute
+    } else {
+      clearInterval(interval); // Clear the interval when the page is not visible
+    }
+
+    return () => clearInterval(interval); // Clean up interval on component unmount or visibility change
+  }, [isPageVisible]);
+  useEffect(() => {
+    console.log("isPageVisible: ", isPageVisible);
+  }, [isPageVisible]);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);

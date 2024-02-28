@@ -15,11 +15,11 @@ const styles = {
     fontWeight: "bold",
   },
   logoutButton: {
-    color: "#1A202C", // Golden button text
-    backgroundColor: "red", // Golden border for the button
+    color: "black", // Golden button text
+    backgroundColor: "#DAA520", // Golden border for the button
     fontWeight: "bold",
     "&:hover": {
-      backgroundColor: "#DAA520",
+      backgroundColor: "#DAA570",
       color: "#2E3B55", // Text color changes on hover
     },
   },
@@ -51,7 +51,7 @@ const NavBar = () => {
             sx={styles.balanceDisplay}
             onClick={() => navigate("/account")}
           >
-            Balance: {currentUser?.balance || "0"} Birr
+            {currentUser?.balance || "0"} ብር
           </Typography>
           <Button
             color="inherit"

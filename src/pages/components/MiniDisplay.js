@@ -51,13 +51,16 @@ const styles = {
 };
 
 const MiniDisplay = ({ countdown, session, userBets }) => {
-  const betsLeft = session.maxParticipants - session.participants.length;
+  const betsLeft = session.maxParticipants - session?.participants?.length || 0;
   const peopleBetted = session.participants.length;
   const progress = (peopleBetted / session.maxParticipants) * 100;
 
   useEffect(() => {
     console.log("id: ", userBets);
   }, [userBets]);
+  useEffect(() => {
+    console.log("session: ", session);
+  }, []);
   return (
     <Box sx={styles.container}>
       <Box sx={styles.progressBar}>
@@ -95,8 +98,14 @@ const MiniDisplay = ({ countdown, session, userBets }) => {
           sx={{
             height: "10px", // Makes the progress bar thicker
             backgroundColor: "rgba(255, 255, 255, 0.3)", // Lighter shade for the background of the progress bar
+            animation: "pulsate 1s infinite",
             "& .MuiLinearProgress-bar": {
               backgroundColor: "#FFD700", // Gold color for the progress bar fill
+            },
+            "@keyframes pulsate": {
+              "0%": { opacity: 0.7 },
+              "50%": { opacity: 0.3 },
+              "100%": { opacity: 0.7 },
             },
           }}
         />

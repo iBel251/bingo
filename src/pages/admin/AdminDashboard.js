@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import useMainStore from "../../store/mainStore"; // Adjust path as necessary
 import { useAdminAuth } from "../../context/AdminContext";
 import Winners from "./Winners";
+import ActiveGames from "./ActiveGames";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const AdminDashboard = () => {
         </Button>
       </Box>
       <Box>
+        <ActiveGames />
         <Winners totalNumbers={100} />
       </Box>
     </div>
