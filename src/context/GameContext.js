@@ -16,49 +16,48 @@ const GameContext = createContext(null);
 
 export const GameContextProvider = ({ children }) => {
   const { setActiveGameSessions, setCurrentUser, currentUser } = useMainStore();
+  const currentUserId = currentUser?.id;
   // Function to check if the user ID already exists
   useEffect(() => {
-    const q = query(collection(db, "bingoSessions"));
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
-        const sessions = [];
-        querySnapshot.forEach((doc) => {
-          sessions.push({ id: doc.id, ...doc.data() });
-        });
-        setActiveGameSessions(sessions);
-      },
-      (error) => {
-        console.error("Error fetching bingo sessions:", error);
-      }
-    );
-
-    // Cleanup function to unsubscribe from the listener when the component unmounts
-    return () => unsubscribe();
+    fetchGameSessions();
   }, []);
 
-  // Subscribe to current user data in real-time
   useEffect(() => {
-    if (currentUser && currentUser.id) {
-      const docRef = doc(db, "users", currentUser.id);
-      const unsubscribeUser = onSnapshot(
-        docRef,
-        (doc) => {
-          if (doc.exists()) {
-            const updatedData = doc.data();
+    const fetchUserData = async () => {
+      if (currentUser && currentUser.id) {
+        const docRef = doc(db, "users", currentUser.id);
+        try {
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const updatedData = docSnap.data();
             const { password, securityQuestions, ...updatedUserData } =
               updatedData;
-            setCurrentUser({ ...updatedUserData, id: doc.id }); // Update user data in real-time
+            setCurrentUser({ ...updatedUserData, id: docSnap.id }); // Update user data
+          } else {
+            console.log("No such document!");
           }
-        },
-        (error) => {
+        } catch (error) {
           console.error("Error fetching user data:", error);
         }
-      );
+      }
+    };
 
-      return () => unsubscribeUser(); // Cleanup function to unsubscribe
+    fetchUserData();
+  }, [currentUserId]); // Depend on currentUserId to refetch when it changes
+
+  const fetchGameSessions = async () => {
+    const q = query(collection(db, "bingoSessions"));
+    try {
+      const querySnapshot = await getDocs(q);
+      const sessions = [];
+      querySnapshot.forEach((doc) => {
+        sessions.push({ id: doc.id, ...doc.data() });
+      });
+      setActiveGameSessions(sessions); // Update sessions in Zustand store
+    } catch (error) {
+      console.error("Error fetching bingo sessions:", error);
     }
-  }, [currentUser, setCurrentUser]);
+  };
 
   const placeBet = async (userId, gameId, amount, chosenNumber) => {
     try {
@@ -138,6 +137,7 @@ export const GameContextProvider = ({ children }) => {
   // Value to be passed to the context consumers
   const value = {
     placeBet,
+    fetchGameSessions,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

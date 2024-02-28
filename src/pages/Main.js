@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useMainStore from "../store/mainStore";
-import { useNavigate } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  Button,
-  CircularProgress,
-  Toolbar,
-  Typography,
-  Container,
-} from "@mui/material";
-import { useGameAuth } from "../context/GameContext";
+import { Box, CircularProgress, Container } from "@mui/material";
 import ActiveSessionDisplay from "./components/ActiveSessionDisplay";
 
 // Custom styles
@@ -46,8 +36,6 @@ const styles = {
 };
 
 const Main = () => {
-  const { fetchBingoSessions } = useGameAuth();
-  const navigate = useNavigate();
   const { currentUser, logout, activeGameSessions } = useMainStore((state) => ({
     currentUser: state.currentUser,
     logout: state.logout,
@@ -55,35 +43,8 @@ const Main = () => {
   }));
   const [loadingSessions, setLoadingSessions] = useState(false);
 
-  const handleLogout = () => {
-    const isConfirmed = window.confirm("Are you sure you want to log out?");
-    if (isConfirmed) {
-      logout();
-      navigate("/login");
-    }
-  };
-
   return (
     <div>
-      <AppBar position="static" sx={styles.appBar}>
-        <Toolbar>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={styles.balanceDisplay}
-            onClick={() => navigate("/account")}
-          >
-            Balance: {currentUser?.balance || "0"} Birr
-          </Typography>
-          <Button
-            color="inherit"
-            sx={styles.logoutButton}
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
       {loadingSessions ? (
         <Box sx={styles.loadingIndicator}>
           <CircularProgress color="inherit" />

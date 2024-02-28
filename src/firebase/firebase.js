@@ -19,8 +19,18 @@ const firebaseConfig = {
   measurementId: "G-4LGPL5VNR6",
 };
 
+const firebaseConfig2 = {
+  apiKey: "AIzaSyAYIUZ3-wmlOnrRrjoUZ7x81xdr_akWFK8",
+  authDomain: "bingo2-632db.firebaseapp.com",
+  projectId: "bingo2-632db",
+  storageBucket: "bingo2-632db.appspot.com",
+  messagingSenderId: "699323664728",
+  appId: "1:699323664728:web:cd517e12e6a4d752f37d2d",
+  measurementId: "G-T27FT97H91",
+};
+
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig2);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const database = getDatabase(app);

@@ -8,10 +8,12 @@ import "./App.css";
 import PublicRoute from "./routeProtectors/PublicRoute";
 import AdminRoute from "./routeProtectors/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import NavBar from "./pages/components/NavBar";
 
 function App() {
   return (
     <BrowserRouter>
+      <NavBar />
       <Routes>
         <Route
           path="/"

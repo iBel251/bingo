@@ -107,7 +107,7 @@ const calculateWinnings = (totalBet, position) => {
 };
 
 const SessionCard = ({ session, currentUser }) => {
-  const { placeBet } = useGameAuth();
+  const { placeBet, fetchGameSessions } = useGameAuth();
   const { activeGameSessions } = useMainStore();
   const userId = currentUser.id || null;
   const [countdown, setCountdown] = useState("");
@@ -122,22 +122,29 @@ const SessionCard = ({ session, currentUser }) => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
-
-  const fetchCurrentUTCTime = async () => {
-    try {
-      const response = await fetch(
-        "https://worldtimeapi.org/api/timezone/Etc/UTC"
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch time");
-      }
-      const data = await response.json();
-      return new Date(data.utc_datetime); // Returns the current UTC time as a Date object
-    } catch (error) {
-      console.error("Error fetching current UTC time:", error);
-      return null;
+  useEffect(() => {
+    if (session?.isOver) {
+      setIsActive(false);
+    } else if (!session?.isOver) {
+      setIsActive(true);
     }
-  };
+  });
+
+  // const fetchCurrentUTCTime = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "https://worldtimeapi.org/api/timezone/Etc/UTC"
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch time");
+  //     }
+  //     const data = await response.json();
+  //     return new Date(data.utc_datetime); // Returns the current UTC time as a Date object
+  //   } catch (error) {
+  //     console.error("Error fetching current UTC time:", error);
+  //     return null;
+  //   }
+  // };
 
   useEffect(() => {
     console.log("UserID:", userId);
@@ -149,44 +156,44 @@ const SessionCard = ({ session, currentUser }) => {
     }
   }, [session.participants, userId]);
 
-  useEffect(() => {
-    let intervalId;
+  // useEffect(() => {
+  //   let intervalId;
 
-    const calculateCountdown = async () => {
-      const currentTime = await fetchCurrentUTCTime();
-      if (!currentTime) {
-        setCountdown("Error fetching time");
-        return;
-      }
-      const durationMs = session.duration * 60 * 60 * 1000;
-      const endTime = new Date(session.startTime.seconds * 1000 + durationMs);
-      const distance = endTime.getTime() - currentTime.getTime();
+  //   const calculateCountdown = async () => {
+  //     const currentTime = await fetchCurrentUTCTime();
+  //     if (!currentTime) {
+  //       setCountdown("Error fetching time");
+  //       return;
+  //     }
+  //     const durationMs = session.duration * 60 * 60 * 1000;
+  //     const endTime = new Date(session.startTime.seconds * 1000 + durationMs);
+  //     const distance = endTime.getTime() - currentTime.getTime();
 
-      if (distance < 0) {
-        setCountdown("Session has ended");
-        clearInterval(intervalId);
-        setIsActive(false);
-        return;
-      }
-      setIsActive(true);
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      if (days === 0) {
-        setCountdown(`${hours}h ${minutes}m ${seconds}s`);
-      } else {
-        setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-      }
-    };
+  //     if (distance < 0) {
+  //       setCountdown("Session has ended");
+  //       clearInterval(intervalId);
+  //       setIsActive(false);
+  //       return;
+  //     }
+  //     setIsActive(true);
+  //     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  //     const hours = Math.floor(
+  //       (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  //     );
+  //     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  //     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  //     if (days === 0) {
+  //       setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+  //     } else {
+  //       setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+  //     }
+  //   };
 
-    calculateCountdown();
-    intervalId = setInterval(calculateCountdown, 1000);
+  //   calculateCountdown();
+  //   intervalId = setInterval(calculateCountdown, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [session.startTime.seconds, session.duration]);
+  //   return () => clearInterval(intervalId);
+  // }, [session.startTime.seconds, session.duration]);
 
   const totalBet = session.betAmount * session.maxParticipants;
 

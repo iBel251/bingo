@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import useMainStore from "../../store/mainStore"; // Adjust path as necessary
 import { useAdminAuth } from "../../context/AdminContext";
+import Winners from "./Winners";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -37,21 +38,6 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, cursor: "pointer" }}
-            onClick={() => navigate("/account")}
-          >
-            Balance: {currentUser?.balance || "0"} Birr
-          </Typography>
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
         <TextField
           label="Bet Amount"
@@ -81,7 +67,9 @@ const AdminDashboard = () => {
           Start New Session
         </Button>
       </Box>
-      <div>Admin Content</div>
+      <Box>
+        <Winners totalNumbers={100} />
+      </Box>
     </div>
   );
 };

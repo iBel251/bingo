@@ -11,6 +11,10 @@ const useMainStore = create(
       setCurrentUser: (data) => set({ currentUser: data }),
       setActiveGameSessions: (data) => set({ activeGameSessions: data }),
       logout: () => set({ isAuthenticated: false, currentUser: null }),
+      updateUserBalance: (balance) =>
+        set((state) => ({
+          currentUser: { ...state.currentUser, balance: balance },
+        })),
     }),
     "MainStore"
   )
