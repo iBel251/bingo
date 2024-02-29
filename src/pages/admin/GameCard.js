@@ -11,6 +11,32 @@ import {
 import { format } from "date-fns";
 import NumberPickerDialog from "./NumberPicker";
 import useMainStore from "../../store/mainStore";
+import CardMIniScreen from "./CardMIniScreen";
+
+const styles = {
+  cardContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  cardContentBox: {
+    width: {
+      xs: "100%",
+      md: "50%",
+    },
+  },
+  numList: {
+    display: "flex",
+    flexWrap: "wrap",
+    maxWidth: "500px",
+  },
+  numBox: {
+    border: "1px solid black",
+    margin: "2px",
+    padding: "2px",
+    width: "25px",
+    textAlign: "center",
+  },
+};
 
 const GameCard = ({ game }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -40,6 +66,7 @@ const GameCard = ({ game }) => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+
   // Convert seconds to a readable date
   const startTime = new Date(game.startTime.seconds * 1000);
   const formattedStartTime = format(startTime, "PPPpp");
@@ -53,42 +80,58 @@ const GameCard = ({ game }) => {
         boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
       }}
     >
-      <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Game ID: {game.id}
-        </Typography>
-        <Typography variant="h5" component="div">
-          Bet Amount: {game.betAmount} Birr
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Start Time: {formattedStartTime}
-        </Typography>
-        <Typography>Max Participants: {game.maxParticipants}</Typography>
-        <Typography>
-          Remaining Bets: {game.maxParticipants - game.participants.length}
-        </Typography>
-        <Box>
-          Real Participants:{realParticipants.length}
-          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-            <Chip label={`Numbers : ${realNumbers.map((num) => `${num}`)}`} />
-          </Stack>
+      <CardContent sx={styles.cardContainer}>
+        <Box sx={styles.cardContentBox}>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Game ID: {game.id}
+          </Typography>
+          <Typography variant="h5" component="div">
+            Bet Amount: {game.betAmount} Birr
+          </Typography>
+          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            Start Time: {formattedStartTime}
+          </Typography>
+          <Typography>Max Participants: {game.maxParticipants}</Typography>
+          <Typography>
+            Remaining Bets: {game.maxParticipants - game.participants.length}
+          </Typography>
+          <Box>
+            Real Participants:{realParticipants.length}
+            <Box sx={styles.numList}>
+              {realNumbers.map((num) => (
+                <Box key={num} sx={styles.numBox}>
+                  {num}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Box>
+            Jocker Participants:{jockerParticipants.length}
+            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+              <Chip label={`User ${jockerParticipants[0]?.userId}`} />
+            </Stack>
+            <Box sx={styles.numList}>
+              {jockerNumbers.map((num) => (
+                <Box key={num} sx={styles.numBox}>
+                  {num}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Button variant="outlined" onClick={handleOpenDialog}>
+            Admin Bet
+          </Button>
+
+          <NumberPickerDialog
+            isOpen={isDialogOpen}
+            onClose={handleCloseDialog}
+            session={game}
+            currentUser={currentUser}
+          />
         </Box>
-        <Box>
-          Jocker Participants:{jockerParticipants.length}
-          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-            <Chip label={`User ${jockerParticipants[0]?.userId}`} />
-            <Chip label={`Numbers : ${jockerNumbers.map((num) => `${num}`)}`} />
-          </Stack>
+        <Box sx={styles.cardContentBox}>
+          <CardMIniScreen game={game} />
         </Box>
-        <Button variant="outlined" onClick={handleOpenDialog}>
-          Admin Bet
-        </Button>
-        <NumberPickerDialog
-          isOpen={isDialogOpen}
-          onClose={handleCloseDialog}
-          session={game}
-          currentUser={currentUser}
-        />
       </CardContent>
     </Card>
   );

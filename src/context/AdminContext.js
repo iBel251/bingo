@@ -7,6 +7,7 @@ import {
   addDoc,
   collection,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import useMainStore from "../store/mainStore";
@@ -52,21 +53,61 @@ export const AdminContextProvider = ({ children }) => {
   };
 
   // Function to generate random winners
-  const generateRandomWinners = (totalNumbers, winnersCount) => {
-    const winners = new Set();
-    while (winners.size < winnersCount) {
-      const array = new Uint32Array(1);
-      window.crypto.getRandomValues(array);
-      const randomWinner = (array[0] % totalNumbers) + 1;
-      winners.add(randomWinner);
+  const generateRandomWinners = (
+    winnersCount,
+    winnablePositions,
+    numbersChosenByUsers
+  ) => {
+    const winners = new Array(winnersCount).fill(0); // Initialize winners array with 0s
+    const availableNumbers = new Set(numbersChosenByUsers); // Use a Set for efficient lookup
+
+    // Ensure winnablePositions is sorted so we fill from the highest priority
+    winnablePositions.sort((a, b) => a - b);
+
+    winnablePositions.forEach((position, index) => {
+      if (position <= winnersCount && availableNumbers.size > 0) {
+        // Randomly select a winner from availableNumbers
+        const randomIndex = Math.floor(Math.random() * availableNumbers.size);
+        const selectedNumber = Array.from(availableNumbers)[randomIndex];
+
+        winners[position - 1] = selectedNumber; // Assign the selected number to the corresponding winnable position
+        availableNumbers.delete(selectedNumber); // Remove the selected number from availableNumbers to avoid duplicates
+      }
+    });
+
+    return winners;
+  };
+
+  const finalizeBingoSession = async (gameId, winnersData) => {
+    try {
+      const sessionDocRef = doc(db, "bingoSessions", "activeGames");
+
+      // Construct the field path to the specific game using dot notation
+      const gameFieldPath = `${gameId}`; // Adjust 'games' if the actual field name differs
+
+      // Prepare the update object for the specific game session
+      const updateData = {
+        [`${gameFieldPath}.winners`]: winnersData,
+        [`${gameFieldPath}.endTime`]: Timestamp.now(),
+        [`${gameFieldPath}.isOver`]: true,
+      };
+
+      // Update the nested field within the document
+      await updateDoc(sessionDocRef, updateData);
+
+      console.log(`Bingo session ${gameId} has been finalized.`);
+      return { success: true };
+    } catch (error) {
+      console.error("Error finalizing bingo session:", error);
+      return { success: false, error };
     }
-    return Array.from(winners);
   };
 
   // Value to be passed to the context consumers
   const value = {
     startNewBingoSession,
     generateRandomWinners,
+    finalizeBingoSession,
   };
 
   return (

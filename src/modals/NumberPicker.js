@@ -61,12 +61,14 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
 
   const handleConfirmSelection = async () => {
     setIsLoading(true);
+    const fullName = currentUser.firstName + " " + currentUser.lastName;
     if (selectedNumber !== null) {
       const result = await placeBet(
         userId,
         session.id,
         session.betAmount,
-        selectedNumber
+        selectedNumber,
+        fullName
       );
 
       if (result.success) {

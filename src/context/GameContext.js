@@ -107,7 +107,7 @@ export const GameContextProvider = ({ children }) => {
     }
   };
 
-  const placeBet = async (userId, gameId, amount, chosenNumber) => {
+  const placeBet = async (userId, gameId, amount, chosenNumber, fullName) => {
     try {
       // Reference to the user document
       const userRef = doc(db, "users", userId);
@@ -173,7 +173,7 @@ export const GameContextProvider = ({ children }) => {
         // Update the game session's participant list
         const updatedParticipants = [
           ...currentParticipants,
-          { userId, amount, number: chosenNumber },
+          { userId, amount, number: chosenNumber, name: fullName },
         ];
         const updatedGameData = {
           ...gameData,
@@ -195,6 +195,7 @@ export const GameContextProvider = ({ children }) => {
     }
   };
   const placeAdminBets = async (userId, gameId, amount, chosenNumber) => {
+    const fullName = "jocker";
     try {
       // Reference to the activeGames document
       const activeGamesRef = doc(db, "bingoSessions", "activeGames");
@@ -229,7 +230,7 @@ export const GameContextProvider = ({ children }) => {
         // Update the game session's participant list
         const updatedParticipants = [
           ...currentParticipants,
-          { userId, amount, number: chosenNumber },
+          { userId, amount, number: chosenNumber, name: fullName },
         ];
         const updatedGameData = {
           ...gameData,

@@ -22,8 +22,8 @@ const ActiveGames = () => {
       <Button variant="contained" onClick={handleRefetch}>
         Refetch games
       </Button>
-      {sortedSessions.map((game, index) => (
-        <GameCard key={index} game={game} />
+      {sortedSessions.map((game) => (
+        <GameCard key={game.id} game={game} />
       ))}
     </Box>
   );

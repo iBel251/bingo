@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Main from "./pages/Main";
 import Login from "./pages/Login";
 import Account from "./pages/Account";
@@ -10,10 +10,16 @@ import AdminRoute from "./routeProtectors/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import NavBar from "./pages/components/NavBar";
 
+const NavBarWrapper = () => {
+  const location = useLocation(); // Use the useLocation hook to get the current location
+  // Check the pathname and render NavBar conditionally
+  return location.pathname !== "/login" ? <NavBar /> : null;
+};
+
 function App() {
   return (
     <BrowserRouter>
-      <NavBar />
+      <NavBarWrapper />
       <Routes>
         <Route
           path="/"
