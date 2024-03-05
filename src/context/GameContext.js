@@ -22,10 +22,6 @@ export const GameContextProvider = ({ children }) => {
     currentUser,
   } = useMainStore();
   const currentUserId = currentUser?.id;
-  // Function to check if the user ID already exists
-  useEffect(() => {
-    fetchGameSessions();
-  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -108,6 +104,7 @@ export const GameContextProvider = ({ children }) => {
   };
 
   const placeBet = async (userId, gameId, amount, chosenNumber, fullName) => {
+    console.log("parameteres", userId, gameId, amount, chosenNumber, fullName);
     try {
       // Reference to the user document
       const userRef = doc(db, "users", userId);
@@ -237,11 +234,7 @@ export const GameContextProvider = ({ children }) => {
           participants: updatedParticipants,
         };
         // Update the activeGames document with the updated game data
-        transaction.set(
-          activeGamesRef,
-          { [gameId]: updatedGameData },
-          { merge: true }
-        );
+        transaction.update(activeGamesRef, { [gameId]: updatedGameData });
       });
 
       console.log("Bet placed successfully");

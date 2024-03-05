@@ -13,7 +13,7 @@ const styles = {
     border: "1px solid #2E3B55", // Dark blue for borders
     borderRadius: "0px",
     backgroundColor: "#2E3B55", // Dark blue for background
-    backgroundImage: `url(${diceBackground})`,
+    backgroundImage: `linear-gradient(rgba(0,0,0,0.9),rgba(0,0,0,0.5)),url(${diceBackground})`,
     backgroundSize: "cover", // Cover the entire area of the container
     backgroundPosition: "center",
     position: "relative",
@@ -109,7 +109,7 @@ const calculateWinnings = (totalBet, position) => {
 const SessionCard = ({ session, currentUser }) => {
   const { placeBet, fetchGameSessions } = useGameAuth();
   const { activeGameSessions } = useMainStore();
-  const userId = currentUser.id || null;
+  const userId = currentUser.uid || null;
   const [countdown, setCountdown] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

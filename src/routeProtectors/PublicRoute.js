@@ -1,14 +1,15 @@
 // PublicRoute.js
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import useMainStore from "../store/mainStore"; // Adjust path as necessary
 
 const PublicRoute = ({ children }) => {
-  const isAuthenticated = useMainStore((state) => state.isAuthenticated);
+  const { isAuthenticated, headTo, currentUser } = useMainStore();
 
   if (isAuthenticated) {
     // Redirect authenticated users to the main page or dashboard
-    return <Navigate to="/" />;
+
+    return <Navigate to={headTo || "/"} />;
   }
 
   return children;

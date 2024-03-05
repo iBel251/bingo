@@ -23,7 +23,7 @@ const NumberPickerDialog = ({ isOpen, onClose, session, currentUser }) => {
   const { updateUserBalance } = useMainStore();
   const pickedNumbers =
     session.participants?.map((participant) => participant.number) || [];
-  const userId = currentUser.id;
+  const userId = currentUser.uid;
   const canBet = session.betAmount <= currentUser.balance;
   const navigate = useNavigate();
 

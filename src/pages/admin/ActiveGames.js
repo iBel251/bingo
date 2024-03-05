@@ -8,15 +8,16 @@ const ActiveGames = () => {
   const { activeGameSessions } = useMainStore();
   const { fetchGameSessions } = useGameAuth();
   useEffect(() => {
-    console.log(activeGameSessions);
+    handleRefetch();
   }, []);
   const handleRefetch = async () => {
     await fetchGameSessions();
   };
 
-  const sortedSessions = activeGameSessions.sort(
-    (a, b) => b.startTime.seconds - a.startTime.seconds
-  );
+  const sortedSessions =
+    activeGameSessions?.sort(
+      (a, b) => b.startTime.seconds - a.startTime.seconds
+    ) || [];
   return (
     <Box>
       <Button variant="contained" onClick={handleRefetch}>

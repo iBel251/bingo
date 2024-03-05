@@ -7,9 +7,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Box,
 } from "@mui/material";
 import SecurityQuestionsModal from "../modals/SecurityQuestionsModal"; // Ensure this component is correctly implemented
 import { useUserAuth } from "../context/AuthContext";
+import EmailIcon from "@mui/icons-material/Email";
+import KeyIcon from "@mui/icons-material/Key";
+import PersonIcon from "@mui/icons-material/Person";
 
 const styles = {
   container: {
@@ -17,144 +21,167 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    margin: "50px auto",
-    width: "300px",
+    margin: "auto",
+    width: "100%",
   },
   textField: {
-    marginBottom: "20px",
+    background: "white",
+    border: "none",
   },
   actionButton: {
     marginBottom: "20px",
   },
   backButton: {
     marginTop: "10px",
+    color: "white",
+  },
+  signupBtn: {
+    width: "100%",
+    height: "50px",
+    color: "black",
+    background: "goldenrod",
+    marginRight: "5px",
+    borderRadius: "0px",
+    "&:hover": { background: "gold" },
+  },
+  fieldContainer: {
+    display: "flex",
+    marginBottom: "10px",
+  },
+  icon: {
+    color: "black",
+    background: "goldenrod",
+    fontSize: "30px",
+    padding: "13px",
   },
 };
 
 const Signup = ({ toggleMode }) => {
   const [userDetails, setUserDetails] = useState({
-    userId: "",
-    firstName: "aaaa",
-    lastName: "bbbb",
-    password: "123456",
-    securityQuestions: {},
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
   });
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const { saveUserData, checkUserIdExists } = useUserAuth();
-
-  const generateAndCheckUserId = async () => {
-    let idExists = true;
-    let newId = "";
-    while (idExists) {
-      const potentialId = Math.floor(
-        100000 + Math.random() * 900000
-      ).toString(); // Generates a 6-digit random number
-      const exists = await checkUserIdExists(potentialId);
-      if (!exists) {
-        newId = potentialId;
-        idExists = false;
-      }
-    }
-    setUserDetails((prevDetails) => ({ ...prevDetails, userId: newId }));
-  };
+  const { registerWithEmailPassword } = useUserAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (userDetails.password !== passwordConfirm) {
       console.log("Passwords do not match");
       return;
     }
-    setModalOpen(true); // Open modal to collect security questions
-  };
-
-  const handleModalSave = async (securityQuestions) => {
-    // Include security questions into userDetails
-    const completeUserDetails = { ...userDetails, securityQuestions };
-
-    // Call saveUserData with complete user details
     try {
-      const signupSuccess = await saveUserData(completeUserDetails);
+      const signupSuccess = await registerWithEmailPassword(userDetails);
       if (signupSuccess) {
-        console.log("Signup and security questions saved successfully");
-        // Reset state or redirect user as needed
-        toggleMode(); // Example of redirecting user back to login
+        console.log("signup successfull.");
+        toggleMode();
       } else {
-        console.error("Error saving user data");
+        console.error("error");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
-    } finally {
-      setModalOpen(false); // Ensure modal is closed after attempt to save data
+      console.error(error);
     }
   };
 
+  // const handleModalSave = async (securityQuestions) => {
+  //   // Include security questions into userDetails
+  //   const completeUserDetails = { ...userDetails, securityQuestions };
+
+  //   // Call saveUserData with complete user details
+  //   try {
+  //     const signupSuccess = await saveUserData(completeUserDetails);
+  //     if (signupSuccess) {
+  //       console.log("Signup and security questions saved successfully");
+  //       // Reset state or redirect user as needed
+  //       toggleMode(); // Example of redirecting user back to login
+  //     } else {
+  //       console.error("Error saving user data");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during signup:", error);
+  //   } finally {
+  //     setModalOpen(false); // Ensure modal is closed after attempt to save data
+  //   }
+  // };
+
   return (
-    <div style={styles.container}>
-      <h2>Signup</h2>
-      <Button
-        variant="contained"
-        onClick={generateAndCheckUserId}
-        style={styles.actionButton}
-      >
-        Generate User ID
-      </Button>
-      <form onSubmit={handleSubmit}>
+    <Box style={styles.container}>
+      <h2 style={{ color: "white" }}>Signup</h2>
+
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         {/* TextFields for firstName, lastName, and password */}
-        <TextField
-          label="First Name"
-          type="text"
-          name="firstName"
-          value={userDetails.firstName}
-          onChange={handleChange}
-          style={styles.textField}
-          fullWidth
-        />
-        <TextField
-          label="Last Name"
-          type="text"
-          name="lastName"
-          value={userDetails.lastName}
-          onChange={handleChange}
-          style={styles.textField}
-          fullWidth
-        />
-        <TextField
-          label="User ID"
-          type="text"
-          value={userDetails.userId}
-          style={styles.textField}
-          fullWidth
-          disabled
-        />
-        <TextField
-          label="Password"
-          type="password"
-          name="password"
-          value={userDetails.password}
-          onChange={handleChange}
-          style={styles.textField}
-          fullWidth
-        />
-        <TextField
-          label="Confirm Password"
-          type="password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-          style={styles.textField}
-          fullWidth
-        />
+        <Box sx={styles.fieldContainer}>
+          <EmailIcon sx={styles.icon} />
+          <TextField
+            label="Email"
+            variant="filled"
+            type="text"
+            name="email"
+            value={userDetails.email}
+            onChange={handleChange}
+            style={styles.textField}
+            fullWidth
+          />
+        </Box>
+        <Box sx={styles.fieldContainer}>
+          <PersonIcon sx={styles.icon} />
+          <TextField
+            label="First Name"
+            type="text"
+            name="firstName"
+            value={userDetails.firstName}
+            onChange={handleChange}
+            style={styles.textField}
+            fullWidth
+          />
+        </Box>
+        <Box sx={styles.fieldContainer}>
+          <PersonIcon sx={styles.icon} />
+          <TextField
+            label="Last Name"
+            type="text"
+            name="lastName"
+            value={userDetails.lastName}
+            onChange={handleChange}
+            style={styles.textField}
+            fullWidth
+          />
+        </Box>
+        <Box sx={styles.fieldContainer}>
+          <KeyIcon sx={styles.icon} />
+          <TextField
+            label="Password"
+            type="password"
+            name="password"
+            value={userDetails.password}
+            onChange={handleChange}
+            style={styles.textField}
+            fullWidth
+          />
+        </Box>
+        <Box sx={styles.fieldContainer}>
+          <KeyIcon sx={styles.icon} />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            style={styles.textField}
+            fullWidth
+          />
+        </Box>
         <Button
-          variant="contained"
           type="submit"
-          disabled={
-            !userDetails.userId || !userDetails.password || !passwordConfirm
-          }
+          disabled={!userDetails.password || !passwordConfirm}
+          sx={styles.signupBtn}
         >
           Sign Up
         </Button>
@@ -162,13 +189,7 @@ const Signup = ({ toggleMode }) => {
       <Button variant="text" onClick={toggleMode} style={styles.backButton}>
         Back to Login
       </Button>
-
-      <SecurityQuestionsModal
-        open={modalOpen}
-        onSave={handleModalSave}
-        onClose={() => setModalOpen(false)}
-      />
-    </div>
+    </Box>
   );
 };
 

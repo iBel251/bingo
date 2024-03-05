@@ -5,7 +5,6 @@ import SessionCard from "./SessionCard";
 // Custom styles
 const styles = {
   container: {
-    background: "#1A202C", // A dark background for contrast
     padding: " 0", // Top and bottom padding
     borderRadius: "0px", // Rounded corners for the container
     margin: "0px auto", // Center the container with some margin

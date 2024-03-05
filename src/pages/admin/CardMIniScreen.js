@@ -67,10 +67,10 @@ const CardMIniScreen = ({ game }) => {
   useEffect(() => {
     const totalBet = game.betAmount * game.maxParticipants;
     const realParticipants = game.participants.filter(
-      (participant) => participant.userId !== "123456"
+      (participant) => participant.name !== "jocker"
     );
     const jockerBetters = game.participants.filter(
-      (participant) => participant.userId === "123456"
+      (participant) => participant.name === "jocker"
     );
     const totalRealBets = realParticipants.length * game.betAmount;
     const payablePositions = determinePayablePositions(totalBet, totalRealBets);

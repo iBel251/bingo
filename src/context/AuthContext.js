@@ -1,99 +1,78 @@
 import React, { createContext, useContext } from "react";
 import CryptoJS from "crypto-js";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase"; // Adjust the path as necessary
+import { db, auth } from "../firebase/firebase"; // Adjust the path as necessary
 import useMainStore from "../store/mainStore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const UserContext = createContext(null);
 
 export const AuthContextProvider = ({ children }) => {
   const { setIsAuthenticated, setCurrentUser } = useMainStore();
-  // Function to check if the user ID already exists
-  const checkUserIdExists = async (id) => {
-    const docRef = doc(db, "users", id);
-    const docSnap = await getDoc(docRef);
-
-    return docSnap.exists();
-  };
-
-  // Function to hash password and save user data
-  const saveUserData = async ({
-    userId,
-    firstName,
-    lastName,
-    password,
-    securityQuestions,
-  }) => {
-    // First check if the ID already exists
-    const exists = await checkUserIdExists(userId);
-    if (exists) {
-      console.error("User ID already exists.");
-      return false; // Return false to indicate the save operation didn't proceed
-    }
-
-    // Hash the password
-    const hashedPassword = CryptoJS.SHA256(password).toString();
-
-    // Prepare user data for saving, including hashed password and security questions
-    const userData = {
-      firstName,
-      lastName,
-      password: hashedPassword,
-      securityQuestions,
-      balance: 100,
-    };
-
-    // Save user data to Firestore
+  const registerWithEmailPassword = async (userDetail) => {
     try {
-      await setDoc(doc(db, "users", userId), userData);
-      console.log("User data saved successfully.");
-      return true; // Return true to indicate success
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        userDetail.email,
+        userDetail.password
+      );
+      const user = userCredential.user;
+
+      // Now, save the additional user data to Firestore
+      // Create a reference to the user document in Firestore
+      const userRef = doc(db, "users", user.uid);
+      const { password, ...additionalUserData } = userDetail;
+      // Combine the additional user data with the UID
+      const userData = {
+        ...additionalUserData, // Contains firstName, lastName, etc.
+        uid: user.uid, // Ensure the user's UID is included
+        balance: 300,
+      };
+
+      // Save the combined user data to Firestore
+      await setDoc(userRef, userData);
+
+      console.log("User registration and data saving successful.");
+      return { success: true, user: user };
     } catch (error) {
-      console.error("Error saving user data:", error);
-      return false; // Return false on error
+      console.error("Error registering new user:", error);
+      return { success: false, error: error };
     }
   };
 
-  const authenticateUser = async (userId, password) => {
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
+  // Function to log in a user with email and password
+  const loginWithEmailPassword = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // User is signed in
+      const user = userCredential.user;
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists()) {
-      console.error("No user found with the provided ID.");
-      return false; // User not found
-    }
-
-    // Retrieve the stored hashed password
-    const userDoc = docSnap.data();
-    const storedHashedPassword = userDoc.password;
-
-    // Hash the provided password to compare
-    const hashedPassword = CryptoJS.SHA256(password).toString();
-
-    if (hashedPassword === storedHashedPassword) {
-      console.log("Authentication successful.");
-      // Exclude password from the user details saved in the global state
-      const { password, securityQuestions, ...userDataWithoutSensitiveInfo } =
-        userDoc;
-      const userDataWithId = {
-        ...userDataWithoutSensitiveInfo,
-        id: docSnap.id,
-      };
-      // Update Zustand store with the authenticated status and user data
-      setIsAuthenticated(true);
-      setCurrentUser(userDataWithId);
-      return { isAuthenticated: true, isAdmin: userDoc.isAdmin || false };
-    } else {
-      console.error("Authentication failed. Incorrect password.");
-      return false; // Passwords do not match
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        console.log("User login successful.");
+        return { success: true, user: user, userData: userData };
+      } else {
+        console.log("No additional user data found");
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      return { success: false, error: error };
     }
   };
 
   // Value to be passed to the context consumers
   const value = {
-    saveUserData,
-    checkUserIdExists,
-    authenticateUser,
+    registerWithEmailPassword,
+    loginWithEmailPassword,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

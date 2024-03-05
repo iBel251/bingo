@@ -49,9 +49,9 @@ const GameCard = ({ game }) => {
   useEffect(() => {
     console.log(game);
     if (game) {
-      const realP = game.participants.filter((p) => p.userId != "123456");
+      const realP = game.participants.filter((p) => p.name != "jocker");
       const realNumbers = realP.map((p) => p.number);
-      const jockerP = game.participants.filter((p) => p.userId === "123456");
+      const jockerP = game.participants.filter((p) => p.name === "jocker");
       const jockerNumbers = jockerP.map((p) => p.number);
       setRealParticipants(realP);
       setJockerParticipants(jockerP);

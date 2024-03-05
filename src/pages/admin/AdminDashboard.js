@@ -38,7 +38,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div>
+    <Box sx={{ paddingTop: "100px" }}>
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
         <TextField
           label="Bet Amount"
@@ -70,9 +70,8 @@ const AdminDashboard = () => {
       </Box>
       <Box>
         <ActiveGames />
-        <Winners totalNumbers={100} />
       </Box>
-    </div>
+    </Box>
   );
 };
 
