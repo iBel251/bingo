@@ -19,7 +19,7 @@ const styles = {
     position: "relative",
     color: "#333",
     maxWidth: "400px",
-    margin: "0 auto 10px auto",
+    margin: "10px 0",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
   },
   secondContainer: {

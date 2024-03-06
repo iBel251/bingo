@@ -30,6 +30,8 @@ export const AuthContextProvider = ({ children }) => {
         ...additionalUserData, // Contains firstName, lastName, etc.
         uid: user.uid, // Ensure the user's UID is included
         balance: 300,
+        pendingBets: [],
+        bets: {},
       };
 
       // Save the combined user data to Firestore
@@ -68,11 +70,27 @@ export const AuthContextProvider = ({ children }) => {
       return { success: false, error: error };
     }
   };
+  const fetchUserData = async (userId) => {
+    try {
+      const docRef = doc(db, "users", userId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        setCurrentUser(userData);
+      } else {
+        console.log("No user data found");
+      }
+    } catch (error) {
+      console.error("Error fetching userdata:", error);
+    }
+  };
 
   // Value to be passed to the context consumers
   const value = {
     registerWithEmailPassword,
     loginWithEmailPassword,
+    fetchUserData,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -19,7 +19,7 @@ code {
 
 /* Customizes the whole scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 /* Customizes the track/background of the scrollbar */

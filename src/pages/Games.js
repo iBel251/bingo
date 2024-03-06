@@ -43,6 +43,7 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    background: "black",
   },
   cardContent: {
     background: "rgb(0,0,0,0.8)",
@@ -115,8 +116,16 @@ const Games = () => {
   };
   return (
     <Box sx={styles.container}>
-      <Typography variant="h3" sx={{ color: "goldenrod", textAlign: "center" }}>
-        Games
+      <Typography
+        variant="h3"
+        sx={{
+          color: "goldenrod",
+          textAlign: "center",
+          textDecoration: "underline",
+          textUnderlineOffset: "5px",
+        }}
+      >
+        ጨዋታዎች
       </Typography>
       <Box spacing={2} sx={styles.cardContainer}>
         {gamesData.map((game) => (

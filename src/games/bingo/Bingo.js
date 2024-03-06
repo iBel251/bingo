@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import useMainStore from "../../store/mainStore";
-import { Box, CircularProgress, Container, Typography } from "@mui/material";
-import ActiveSessionDisplay from "./ActiveSessionDisplay";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Typography,
+} from "@mui/material";
 import background from "../../assets/roller.webp";
 import { useGameAuth } from "../../context/GameContext";
+import CompletedSessionDisplay from "./CompletedSessionDisplay";
+import MyBets from "./MyBets";
+import SessionDisplay from "./SessionDisplay";
 
 // Custom styles
 const styles = {
@@ -15,6 +23,10 @@ const styles = {
     backgroundImage: `linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.5)),url(${background})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
+    backgroundRepeat: "no-repeat", // Ensures the background doesn't tile
+    backgroundAttachment: "fixed",
+    display: "flex",
+    justifyContent: "center",
   },
   loadingIndicator: {
     display: "flex",
@@ -23,6 +35,22 @@ const styles = {
     alignItems: "center",
     margin: "auto",
     height: "100%",
+  },
+  navBtn: {
+    color: "black",
+    width: "33%",
+    margin: "0",
+    padding: "3px 0",
+    background: "goldenrod",
+    fontSize: "0.7rem",
+    fontWeight: "bold",
+    "&:hover": {
+      color: "goldenrod",
+    },
+  },
+  activeNavBtn: {
+    color: "goldenrod",
+    background: "#03070A",
   },
 };
 
@@ -33,6 +61,8 @@ const Bingo = () => {
     activeGameSessions: state.activeGameSessions,
   }));
   const [loadingSessions, setLoadingSessions] = useState(false);
+  const [view, setView] = useState("active"); // Possible values: 'active', 'completed', 'betted'
+
   const { fetchGameSessions } = useGameAuth();
 
   useEffect(() => {
@@ -48,7 +78,53 @@ const Bingo = () => {
 
   return (
     <Box sx={styles.container}>
-      <Box sx={{ paddingTop: "100px" }}>
+      <Box
+        sx={{
+          paddingTop: "100px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+            background: "rgba(0,0,0,0.9)",
+            width: "100%",
+            maxWidth: "400px",
+          }}
+        >
+          <Button
+            onClick={() => setView("active")}
+            sx={{
+              ...styles.navBtn,
+              ...(view === "active" && styles.activeNavBtn),
+            }}
+          >
+            Active Games
+          </Button>
+          <Button
+            onClick={() => setView("completed")}
+            sx={{
+              ...styles.navBtn,
+              ...(view === "completed" && styles.activeNavBtn),
+            }}
+          >
+            Completed Games
+          </Button>
+          <Button
+            onClick={() => setView("betted")}
+            sx={{
+              ...styles.navBtn,
+              ...(view === "betted" && styles.activeNavBtn),
+            }}
+          >
+            My Bets
+          </Button>
+        </Box>
+
         {loadingSessions ? (
           <Box sx={styles.loadingIndicator}>
             <CircularProgress size={100} sx={{ color: "goldenrod" }} />
@@ -63,13 +139,17 @@ const Bingo = () => {
               Loading Games...
             </Typography>
           </Box>
-        ) : activeGameSessions ? (
-          <Container>
-            <ActiveSessionDisplay
+        ) : view === "active" && activeGameSessions ? (
+          <Box>
+            <SessionDisplay
               sessionData={activeGameSessions}
               currentUser={currentUser}
             />
-          </Container>
+          </Box>
+        ) : view === "completed" ? (
+          <CompletedSessionDisplay />
+        ) : view === "betted" ? (
+          <MyBets />
         ) : (
           <Typography
             variant="h5"

@@ -81,19 +81,41 @@ export const AdminContextProvider = ({ children }) => {
   const finalizeBingoSession = async (gameId, winnersData) => {
     try {
       const sessionDocRef = doc(db, "bingoSessions", "activeGames");
+      const completedDocRef = doc(db, "bingoSessions", "completedGames");
+      const gameFieldPath = `${gameId}`; // Adjust if necessary
 
-      // Construct the field path to the specific game using dot notation
-      const gameFieldPath = `${gameId}`; // Adjust 'games' if the actual field name differs
+      // Retrieve the current game data
+      const docSnap = await getDoc(sessionDocRef);
+      if (!docSnap.exists()) {
+        throw new Error("Document does not exist!");
+      }
+      const gameData = docSnap.data()[gameFieldPath];
+      if (!gameData) {
+        throw new Error("Game data not found!");
+      }
 
-      // Prepare the update object for the specific game session
+      // Prepare data for the completed games collection (remove participants data)
+      const completedGameData = {
+        ...gameData,
+        winners: winnersData,
+        endTime: Timestamp.now(),
+        isOver: true,
+        // Remove participants data
+      };
+      delete completedGameData.participants; // Remove participants data to save firebase data consumption
+
+      // Update the nested field within the activeGames document to finalize it
       const updateData = {
         [`${gameFieldPath}.winners`]: winnersData,
         [`${gameFieldPath}.endTime`]: Timestamp.now(),
         [`${gameFieldPath}.isOver`]: true,
       };
-
-      // Update the nested field within the document
       await updateDoc(sessionDocRef, updateData);
+
+      // Move the game data to the completedGames document
+      await updateDoc(completedDocRef, {
+        [`${gameId}`]: completedGameData, // Set the game data under its ID as a field
+      });
 
       console.log(`Bingo session ${gameId} has been finalized.`);
       return { success: true };

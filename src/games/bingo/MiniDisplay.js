@@ -11,7 +11,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     padding: "10px",
     margin: "0px",
     border: "1px solid gold", // Light gray border for contrast against the dark background
@@ -23,9 +23,11 @@ const styles = {
     backgroundPosition: "center",
     borderTopLeftRadius: "0px",
     color: "#FFFFFF", // White text color for all text for readability
+    minHeight: "250px",
   },
   item: {
     margin: "10px 0",
+    textAlign: "center",
   },
   highlight: {
     fontWeight: "bold",
@@ -37,7 +39,7 @@ const styles = {
     color: "#CCCCCC", // Light gray for less critical text, maintaining readability
     background: "black",
     width: "100%",
-    margin: "10px 0px -10px 0px",
+    margin: "10px 0px 0px 0px",
   },
   progressBar: {
     width: "100%",
@@ -53,13 +55,20 @@ const styles = {
 
 const MiniDisplay = ({ countdown, session, userBets }) => {
   const betsLeft = session.maxParticipants - session?.participants?.length || 0;
-  const peopleBetted = session.participants.length;
+  const peopleBetted = session.participants?.length || 0;
   const progress = (peopleBetted / session.maxParticipants) * 100;
 
   return (
     <Box sx={styles.container}>
       {!session?.isOver ? (
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
           <Box sx={styles.progressBar}>
             <Box
               sx={{
@@ -78,7 +87,7 @@ const MiniDisplay = ({ countdown, session, userBets }) => {
                 variant="h6"
                 component="div"
               >
-                በሂደት ላይ...
+                መልካም እድል...
               </Typography>
               <Box sx={styles.animationContainer}>
                 <Lottie

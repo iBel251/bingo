@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import DisplayWinners from "./DisplayWinners";
+import useMainStore from "../../store/mainStore";
 
 const styles = {
   container: {
@@ -9,7 +10,7 @@ const styles = {
     color: "#FFFFFF", // White text color for all text for readability
   },
   item: {
-    margin: "10px 0",
+    margin: "5px 0",
   },
   highlight: {
     fontWeight: "bold",
@@ -35,6 +36,12 @@ const styles = {
   },
 };
 const ResultsDisplay = ({ session, userBets }) => {
+  const { currentUser } = useMainStore();
+  const gameId = session?.id || null;
+  const bets = gameId ? currentUser.bets[gameId] : [];
+  const effectiveUserBets = bets || userBets;
+
+  console.log(bets);
   return (
     <Box sx={styles.container}>
       <Typography sx={styles.item} variant="body1">
@@ -42,26 +49,28 @@ const ResultsDisplay = ({ session, userBets }) => {
         <span style={styles.highlight}>{session.maxParticipants}</span>
       </Typography>
 
-      {userBets?.length > 0 ? (
-        <Typography variant="body1" sx={{ mt: 2, textAlign: "center" }}>
+      {effectiveUserBets?.length > 0 ? (
+        <Typography variant="body1" sx={{ mt: "5px", textAlign: "center" }}>
           የእርሶ መደብ
-          <br /> {userBets.join(", ")}
+          <br /> {effectiveUserBets.join(", ")}
         </Typography>
       ) : (
         "በዚህ ዙር አልተሳተፉም።"
       )}
-      <Typography
-        variant="body1"
-        sx={{ mt: 2, textAlign: "center", color: "goldenrod" }}
-      >
-        አሸናፊዎች
-      </Typography>
-      <Box>
-        <DisplayWinners session={session} />
+      <Box sx={{ border: "1px solid white" }}>
+        <Typography
+          variant="body1"
+          sx={{ textAlign: "center", color: "goldenrod" }}
+        >
+          አሸናፊዎች
+        </Typography>
+        <Box>
+          <DisplayWinners session={session} />
+        </Box>
       </Box>
       <Typography sx={{ ...styles.item, ...styles.detailText }} variant="body1">
-        እጣው ሲወጣ የአሸናፊዎች ዝርዝር እዚሁ ላይ ማየት ይቻላል። ለሁሉም አሸናፊዎች ያገኙት ብር በቀጥታ ቀሪ ሂሳባቸው
-        ላይ ይደመራል።
+        ሁሉም ተጫዋቾች ያሸነፉት ገንዘብ በቀጥታ ቀሪ ሂሳብ ላይ ተደምሯል። Online መጠበቅ ግዴታ አደለም። ያሸነፉትን
+        ገንዘብ በማንኛውም ሰአት ያለገደብ ወጪ ማድረግ ይችላሉ።
       </Typography>
     </Box>
   );

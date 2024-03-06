@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import useMainStore from "../store/mainStore";
+import { useUserAuth } from "./AuthContext";
 
 const GameContext = createContext(null);
 
@@ -21,6 +22,7 @@ export const GameContextProvider = ({ children }) => {
     setCurrentUser,
     currentUser,
   } = useMainStore();
+  const { fetchUserData } = useUserAuth();
   const currentUserId = currentUser?.id;
 
   useEffect(() => {
@@ -165,6 +167,13 @@ export const GameContextProvider = ({ children }) => {
         transaction.update(userRef, {
           balance: updatedBalance,
           pendingBets: updatedPendingBets,
+          bets: {
+            ...userData.bets, // Preserve existing bets
+            [gameId]:
+              userData.bets && userData.bets[gameId]
+                ? [...userData.bets[gameId], chosenNumber] // Append to existing array if game ID already present
+                : [chosenNumber], // Initialize with chosen number if game ID not present
+          },
         });
 
         // Update the game session's participant list
@@ -183,7 +192,7 @@ export const GameContextProvider = ({ children }) => {
           { merge: true }
         );
       });
-
+      fetchUserData(userId);
       console.log("Bet placed successfully");
       return { success: true };
     } catch (error) {

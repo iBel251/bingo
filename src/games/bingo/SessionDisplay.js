@@ -7,7 +7,6 @@ const styles = {
   container: {
     padding: " 0", // Top and bottom padding
     borderRadius: "0px", // Rounded corners for the container
-    margin: "0px auto", // Center the container with some margin
   },
   header: {
     color: "#FFD700", // Golden color for the header to add a luxurious feel
@@ -16,7 +15,7 @@ const styles = {
   },
 };
 
-const ActiveSessionDisplay = ({ sessionData, currentUser }) => {
+const SessionDisplay = ({ sessionData, currentUser }) => {
   const sortedSessions = sessionData.sort(
     (a, b) => b.startTime.seconds - a.startTime.seconds
   );
@@ -35,8 +34,20 @@ const ActiveSessionDisplay = ({ sessionData, currentUser }) => {
           currentUser={currentUser}
         />
       ))}
+      {(!sortedSessions || sortedSessions?.length < 1) && (
+        <Typography
+          sx={{
+            color: "white",
+            marginTop: "100px",
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
+        >
+          No games available for now, please come back later.
+        </Typography>
+      )}
     </Container>
   );
 };
 
-export default ActiveSessionDisplay;
+export default SessionDisplay;

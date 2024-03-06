@@ -58,7 +58,11 @@ const Home = () => {
           >
             <Typography
               variant="h2"
-              sx={{ color: "goldenrod", fontSize: "60px", fontWeight: "bold" }}
+              sx={{
+                color: "goldenrod",
+                fontSize: { sm: "2rem", md: "4rem" },
+                fontWeight: "bold",
+              }}
             >
               በቀላል ጨዋታዎች እየተዝናኑ የገንዘብ ሽልማቶችን ያሸንፉ!
             </Typography>
@@ -75,7 +79,14 @@ const Home = () => {
                 <Button sx={styles.loginBtn} onClick={() => navigate("/login")}>
                   Login
                 </Button>
-                <Button sx={styles.signupBtn}>Signup</Button>
+                <Button
+                  sx={styles.signupBtn}
+                  onClick={() =>
+                    navigate(`/login`, { state: { mode: "signup" } })
+                  }
+                >
+                  Signup
+                </Button>
               </>
             )}
           </Box>

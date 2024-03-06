@@ -10,14 +10,16 @@ import {
   Box,
   Button,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { useAdminAuth } from "../../context/AdminContext";
 
 const styles = {
   tableContainer: {
-    maxWidth: "100%", // Ensures the container does not overflow its parent
+    width: "100%", // Ensures the container does not overflow its parent
   },
   table: {
+    width: "100%",
     minWidth: 200, // Minimum width to ensure readability
     tableLayout: "auto", // Allows the table to adjust based on content
   },
@@ -30,10 +32,13 @@ const styles = {
     },
   },
   cell: {
-    maxWidth: "200px", // Maximum width for cells to prevent overly wide cells
+    maxWidth: "100px", // Maximum width for cells to prevent overly wide cells
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis", // Adds an ellipsis for overflow text
+    padding: "0",
+    margin: "0 5px",
+    textAlign: "center",
   },
   jocker: {
     backgroundColor: "rgba(255, 235, 59, 0.7)", // Light yellow for jocker rows
@@ -111,9 +116,11 @@ const HandleWinners = ({ game, winnersData, jockerBetNumbers }) => {
         <Table sx={styles.table} aria-label="winners table" size="small">
           <TableHead sx={styles.header}>
             <TableRow>
-              <TableCell>Pos</TableCell>
-              <TableCell align="right">Num</TableCell>
-              <TableCell align="right" sx={styles.cell}>
+              <TableCell sx={{ width: "10px", padding: "0" }}>Pos</TableCell>
+              <TableCell align="right" sx={{ width: "10px", padding: "0" }}>
+                Num
+              </TableCell>
+              <TableCell sx={{ ...styles.cell, maxWidth: "100px" }}>
                 User ID
               </TableCell>
               <TableCell align="right" sx={styles.cell}>
@@ -134,8 +141,10 @@ const HandleWinners = ({ game, winnersData, jockerBetNumbers }) => {
                   {index + 1}
                 </TableCell>
                 <TableCell align="right">{winner.number}</TableCell>
-                <TableCell align="right" sx={styles.cell}>
-                  {winner.userId}
+                <TableCell sx={{ ...styles.cell, maxWidth: "100px" }}>
+                  <Tooltip title={winner.userId} arrow>
+                    <div style={styles.cell}>{winner.userId}</div>
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="right" sx={styles.cell}>
                   {winner.userId === "123456" ? (

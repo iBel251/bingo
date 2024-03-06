@@ -153,7 +153,7 @@ const CardMIniScreen = ({ game }) => {
             </p>
           ))}
         </Box>
-        <Box>
+        <Box sx={{ width: "100%" }}>
           <HandleWinners
             game={game}
             winnersData={winners}

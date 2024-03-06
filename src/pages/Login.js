@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField, Button, Box } from "@mui/material";
 import Signup from "./Signup";
 import { useUserAuth } from "../context/AuthContext";
@@ -6,7 +6,7 @@ import bg1 from "../assets/bg2.jpg";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import useMainStore from "../store/mainStore";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const styles = {
   background: {
@@ -63,6 +63,15 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const { login, setHeadTo } = useMainStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.mode === "signup") {
+      setIsSignupMode(true);
+    } else {
+      setIsSignupMode(false);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

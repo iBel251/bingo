@@ -17,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 // Define styles
 const styles = {
   appBar: {
-    backgroundColor: "rgb(0,0,0,0.8)", // Dark background for the AppBar for a professional look
+    backgroundColor: "rgb(0,0,0,0.9)", // Dark background for the AppBar for a professional look
     color: "#E3BC3F", // Golden color for text and icons to align with the theme
     position: "fixed",
     boxShadow: "none", // Remove shadow for a flat design
@@ -117,6 +117,8 @@ const Navbar = () => {
     setCurrentPage(page);
     if (page === "home") {
       navigate("/");
+    } else if (page === "signup") {
+      navigate(`/login`, { state: { mode: "signup" } });
     } else {
       navigate(`/${page}`);
     }
@@ -226,7 +228,12 @@ const Navbar = () => {
               >
                 Login
               </Button>
-              <Button sx={styles.signupBtn}>Signup</Button>
+              <Button
+                sx={styles.signupBtn}
+                onClick={() => handleLinkClick("signup")}
+              >
+                Signup
+              </Button>
             </>
           )}
         </Box>
