@@ -13,11 +13,12 @@ import { useNavigate } from "react-router-dom";
 import useMainStore from "../../store/mainStore";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 // Define styles
 const styles = {
   appBar: {
-    backgroundColor: "rgb(0,0,0,0.9)", // Dark background for the AppBar for a professional look
+    backgroundColor: "rgb(0,0,0)", // Dark background for the AppBar for a professional look
     color: "#E3BC3F", // Golden color for text and icons to align with the theme
     position: "fixed",
     boxShadow: "none", // Remove shadow for a flat design
@@ -107,7 +108,9 @@ const Navbar = () => {
   const { isAuthenticated, logout, currentPage, setCurrentPage, currentUser } =
     useMainStore();
   const isMobile = useMediaQuery("(max-width:900px)");
-
+  const { balance, bonus } = currentUser || { balance: 0, bonus: 0 };
+  const totalBalance = balance + bonus;
+  console.log(currentUser);
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -217,9 +220,23 @@ const Navbar = () => {
         </Box>
         <Box sx={styles.loginSignup}>
           {isAuthenticated ? (
-            <Button sx={styles.loginBtn} onClick={handleLogout}>
-              Logout
-            </Button>
+            <>
+              <Box sx={{ display: "flex", m: "auto 10px", gap: "4px" }}>
+                <AttachMoneyIcon
+                  sx={{
+                    background: "goldenrod",
+                    color: "white",
+                    borderRadius: "50%",
+                    textAlign: "center",
+                    margin: "auto",
+                  }}
+                />
+                <Typography>{totalBalance} ብር</Typography>
+              </Box>
+              <Button sx={styles.loginBtn} onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
           ) : (
             <>
               <Button

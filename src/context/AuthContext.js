@@ -30,6 +30,7 @@ export const AuthContextProvider = ({ children }) => {
         ...additionalUserData, // Contains firstName, lastName, etc.
         uid: user.uid, // Ensure the user's UID is included
         balance: 300,
+        bonus: 0,
         pendingBets: [],
         bets: {},
       };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -17,9 +17,10 @@ import useMainStore from "../store/mainStore";
 const styles = {
   container: {
     paddingTop: "100px",
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)),url(${background})`,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7)),url(${background})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
+    backgroundAttachment: "fixed",
   },
   cardContainer: {
     display: "flex",
@@ -35,13 +36,12 @@ const styles = {
     margin: "auto",
   },
   card: {
-    height: "100%",
     width: {
       md: "300px",
     },
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "end",
     alignItems: "center",
     background: "black",
   },
@@ -107,7 +107,10 @@ const gamesData = [
 ];
 const Games = () => {
   const navigate = useNavigate();
-  const { setHeadTo } = useMainStore();
+  const { setHeadTo, setCurrentPage } = useMainStore();
+  useEffect(() => {
+    setCurrentPage("games");
+  }, []);
   const handlePlay = (id) => {
     if (id === 1) {
       setHeadTo("/games/bingo");
@@ -136,9 +139,10 @@ const Games = () => {
                 backgroundImage: `url(${game.pic})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
+                height: "300px",
               }}
             >
-              <CardMedia width="140px" sx={styles.media} title={game.title} />
+              {/* <CardMedia width="140px" sx={styles.media} title={game.title} /> */}
               <CardContent sx={styles.cardContent}>
                 <Typography
                   sx={styles.title}
